@@ -1,0 +1,53 @@
+03/29/2016 18:34:03.924278 ./simplefunctionserver: rpcstubinitialize: Creating C150StreamSocket
+03/29/2016 18:34:04.282679 ./simplefunctionserver: rpcserver.cpp:calling C150StreamSocket::accept
+03/29/2016 18:34:37.456997 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |f|
+03/29/2016 18:34:37.457027 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |u|
+03/29/2016 18:34:37.457047 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |n|
+03/29/2016 18:34:37.457068 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |c|
+03/29/2016 18:34:37.457089 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |1|
+03/29/2016 18:34:37.457110 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |.|
+03/29/2016 18:34:37.457130 ./simplefunctionserver: simplefunction.stub.cpp: invoking func1()
+03/29/2016 18:34:37.457180 ./simplefunctionserver: simplefunction.cpp: func1() invoked
+03/29/2016 18:34:37.457199 ./simplefunctionserver: simplefunction.stub.cpp: returned from  func1() -- responding to client
+03/29/2016 18:34:37.457238 ./simplefunctionserver: C150StreamSocket::write: attempting to send packet with len=5 |DONE.|
+03/29/2016 18:34:37.457289 ./simplefunctionserver: C150StreamSocket::write: Success writing packet with len=5 |DONE.|
+03/29/2016 18:34:37.457584 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |f|
+03/29/2016 18:34:37.457634 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |u|
+03/29/2016 18:34:37.457677 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |n|
+03/29/2016 18:34:37.457701 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |c|
+03/29/2016 18:34:37.457722 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |2|
+03/29/2016 18:34:37.457743 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |.|
+03/29/2016 18:34:37.457762 ./simplefunctionserver: simplefunction.stub.cpp: invoking func2()
+03/29/2016 18:34:37.457785 ./simplefunctionserver: simplefunction.cpp: func2() invoked
+03/29/2016 18:34:37.457803 ./simplefunctionserver: simplefunction.stub.cpp: returned from  func2() -- responding to client
+03/29/2016 18:34:37.457825 ./simplefunctionserver: C150StreamSocket::write: attempting to send packet with len=5 |DONE.|
+03/29/2016 18:34:37.457879 ./simplefunctionserver: C150StreamSocket::write: Success writing packet with len=5 |DONE.|
+03/29/2016 18:34:37.458130 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |f|
+03/29/2016 18:34:37.458178 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |u|
+03/29/2016 18:34:37.458207 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |n|
+03/29/2016 18:34:37.458227 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |c|
+03/29/2016 18:34:37.458248 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |3|
+03/29/2016 18:34:37.458270 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |.|
+03/29/2016 18:34:37.458289 ./simplefunctionserver: simplefunction.stub.cpp: invoking func3()
+03/29/2016 18:34:37.458312 ./simplefunctionserver: simplefunction.cpp: func3() invoked
+03/29/2016 18:34:37.458330 ./simplefunctionserver: simplefunction.stub.cpp: returned from  func3() -- responding to client
+03/29/2016 18:34:37.458351 ./simplefunctionserver: C150StreamSocket::write: attempting to send packet with len=5 |DONE.|
+03/29/2016 18:34:37.458403 ./simplefunctionserver: C150StreamSocket::write: Success writing packet with len=5 |DONE.|
+03/29/2016 18:34:37.458634 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |c|
+03/29/2016 18:34:37.458684 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |u|
+03/29/2016 18:34:37.458724 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |r|
+03/29/2016 18:34:37.458747 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |_|
+03/29/2016 18:34:37.458776 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |t|
+03/29/2016 18:34:37.458796 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |i|
+03/29/2016 18:34:37.458817 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |m|
+03/29/2016 18:34:37.458837 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |e|
+03/29/2016 18:34:37.458858 ./simplefunctionserver: C150StreamSocket::read: successful read with len=1 |.|
+03/29/2016 18:34:37.458876 ./simplefunctionserver: simplefunction.stub.cpp: invoking func3()
+03/29/2016 18:34:37.458929 ./simplefunctionserver: simplefunction.stub.cpp: returned from  func3() -- responding to client
+03/29/2016 18:34:37.458953 ./simplefunctionserver: C150StreamSocket::write: attempting to send packet with len=15 |DONE1459290877.|
+03/29/2016 18:34:37.459006 ./simplefunctionserver: C150StreamSocket::write: Success writing packet with len=15 |DONE1459290877.|
+03/29/2016 18:34:37.470659 ./simplefunctionserver: simplefunction.stub: read zero length message, checking EOF
+03/29/2016 18:34:37.470678 ./simplefunctionserver: simplefunction.stub: EOF signaled on input
+03/29/2016 18:34:37.470696 ./simplefunctionserver: rpcserver.cpp: EOF signaled on input
+03/29/2016 18:34:37.470714 ./simplefunctionserver: Calling C150StreamSocket::close
+03/29/2016 18:34:37.470784 ./simplefunctionserver: rpcserver.cpp:calling C150StreamSocket::accept
