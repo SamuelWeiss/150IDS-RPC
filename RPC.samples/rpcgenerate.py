@@ -2,6 +2,7 @@ import json
 import subprocess
 import sys
 
+builtins = ['int', 'string', 'float', 'void']
 
 def generate_function_proxies(functions):
 	output = ""
@@ -50,7 +51,20 @@ def generate_function_stubs(functions):
 			stub += "( string arguments ){\n"
 			for j in i["arguments"]:
 				stub += "    "
-				stub += j["type"]
+				#if your type is not a builtin, then add a star, you're a pointer
+				#TODO: remember to free later
+				#TODO: clean up type names
+				if j["type"] not in builtins:
+					if '[' in j["type"]:
+						cleaned_name = j["type"][0:j["type"].index('[')]
+						stub += cleaned_name
+						for useless in range(j["type"].count('[')):
+							stub += '* '
+					else:
+						stub += j["type"]
+						stub += '* '
+				else:
+					stub += j["type"]
 				stub += ' '
 				stub += j["name"]
 				stub += " = deserialize_"
@@ -74,6 +88,7 @@ def generate_function_stubs(functions):
 			stub += ", ".join(temp)	
 			stub += '));\n'
 		stub += '    RPCSTUBSOCKET->write(output.c_str(), output.length()+1);\n'
+		#Todo: free stuff
 		stub += '}\n\n'
 		output += stub
 	return output
