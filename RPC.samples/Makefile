@@ -21,7 +21,7 @@ CPP = g++
 
 # change following line if your rpgenerate is not in current directory
 #RPCGEN = ./rpcgenerate
-RPCGEN = python rpcgenerate.py
+RPCGEN = rpcgenerate.py
 
 # Where the COMP 150 shared utilities live, including c150ids.a and userports.csv
 # Note that environment variable COMP150IDS must be set for this to work!
@@ -101,7 +101,7 @@ simplefunctionserver: simplefunction.stub.o rpcserver.o rpcstubhelper.o simplefu
 ########################################################################
 
  %.proxy.cpp %.stub.cpp:%.idl $(RPCGEN)
-	$(RPCGEN) $<
+	python $(RPCGEN) $<
 
 ########################################################################
 #
