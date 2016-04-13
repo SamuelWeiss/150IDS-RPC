@@ -40,7 +40,7 @@ CPPFLAGS = -g -Wall -Werror -I$(C150IDSRPC) -I$(C150LIB)
 LDFLAGS = 
 INCLUDES = $(C150LIB)c150streamsocket.h $(C150LIB)c150network.h $(C150LIB)c150exceptions.h $(C150LIB)c150debug.h $(C150LIB)c150utility.h $(C150LIB)c150grading.h $(C150IDSRPC)IDLToken.h $(C150IDSRPC)tokenizeddeclarations.h  $(C150IDSRPC)tokenizeddeclaration.h $(C150IDSRPC)declarations.h $(C150IDSRPC)declaration.h $(C150IDSRPC)functiondeclaration.h $(C150IDSRPC)typedeclaration.h $(C150IDSRPC)arg_or_member_declaration.h rpcproxyhelper.h rpcstubhelper.h simplefunction.idl arithmetic.idl floatarithmetic.idl 
 
-all: pingstreamclient pingstreamserver idldeclarationtst simplefunctionclient simplefunctionserver idl_to_json  %.proxy.cpp %.stub.cpp
+all: pingstreamclient pingstreamserver idldeclarationtst simplefunctionclient simplefunctionserver idl_to_json
 
 ########################################################################
 #
@@ -80,6 +80,13 @@ simplefunctionclient: simplefunctionclient.o rpcproxyhelper.o simplefunction.pro
 simplefunctionserver: simplefunction.stub.o rpcserver.o rpcstubhelper.o simplefunction.o  $(C150AR) $(C150IDSRPCAR)  $(INCLUDES)
 	$(CPP) -o simplefunctionserver rpcserver.o simplefunction.stub.o simplefunction.o rpcstubhelper.o $(C150AR) $(C150IDSRPCAR) 
 
+#%.proxy.o  $(C150AR) $(C150IDSRPCAR)  $(INCLUDES)
+%.proxy: %.proxy.cpp %.proxy.o 
+	$(CPP) -o %.proxy %.proxy.o $(C150AR) $(C150IDSRPCAR) 
+
+%.stub: %.stub.o 
+	$(CPP) -o %.stub %.stub.o $(C150AR) $(C150IDSRPCAR) 
+
 
 ########################################################################
 #
@@ -100,7 +107,7 @@ simplefunctionserver: simplefunction.stub.o rpcserver.o rpcstubhelper.o simplefu
 #
 ########################################################################
 
- %.proxy.cpp %.stub.cpp:%.idl $(RPCGEN)
+%.proxy.cpp %.stub.cpp:%.idl $(RPCGEN)
 	python $(RPCGEN) $<
 
 ########################################################################
