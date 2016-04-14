@@ -1,13 +1,61 @@
-#include "testfunction.idl"
+// --------------------------------------------------------------
+//
+//                        simplefunctionclient.cpp
+//
+//        Author: Noah Mendelsohn         
+//   
+//
+//        This is a test program designed to call a few demonstration
+//        functions, after first enabling the COMP 150-IDS rpcproxyhelper.
+//        (The purpose of the helper is to open a TCP stream connection
+//        to the proper server, and to leave the socket pointer where
+//        the generated proxies can find it.
+//
+//        NOTE: Although this example does nothing except test the
+//        functions, we may test your proxies and stubs with client
+//        applications that do real work. 
+//
+//        NOTE: When actually testing your RPC submission, you will use
+//        a different client application for each set of functions. This
+//        one is just to show a simple example.
+//
+//        NOTE: The only thing that makes this different from 
+//        an ordinary local application is the call to
+//        rpcproxyinitialize. If you commented that out, you could
+//        link this with the local version of simplefunction.o
+//        (which has the remotable function implementations)							    
+//
+//        COMMAND LINE
+//
+//              simplefunctionclient <servername> 
+//
+//        OPERATION
+//
+//
+//       Copyright: 2012 Noah Mendelsohn
+//     
+// --------------------------------------------------------------
+
+
+// IMPORTANT! WE INCLUDE THE IDL FILE AS IT DEFINES THE INTERFACES
+// TO THE FUNCTIONS WE'RE REMOTING. OF COURSE, THE PARTICULAR IDL FILE
+// IS CHOSEN ACCORDING TO THE TEST OR APPLICATION
+// 
+// NOTE THAT THIS IS THE SAME IDL FILE INCLUDED WITH THE PROXIES
+// AND STUBS, AND ALSO USED AS INPUT TO AUTOMATIC PROXY/STUB
+// GENERATOR PROGRAM
 
 #include "rpcproxyhelper.h"
 
 #include "c150debug.h"
 #include "c150grading.h"
 #include <fstream>
+#include <string>
 
 using namespace std;          // for C++ std library
 using namespace C150NETWORK;  // for all the comp150 utilities 
+
+#include "testfunction.idl"
 
 // forward declarations
 void setUpDebugLogging(const char *logname, int argc, char *argv[]);
@@ -74,23 +122,23 @@ main(int argc, char *argv[]) {
        // 
        // Call (possibly remote) func2
        //
-       printf("Calling halve()\n");
-       cerr << halve(15) << " should be equal to 7.5" << endl;                        // remote call (we hope!)
-       printf("Returned from halve()\n");
+       printf("Calling halve(42)\n");
+       float test = halve(42);              // remote call (we hope!)
+       cerr << "Returned from halve(42) and got " << test << endl;
 
        // 
        // Call (possibly remote) func3
        //
-       printf("Calling pow()\n");
-       cerr << pow(3,3); << " should be 27" << endl;                         // remote call (we hope!)
-       printf("Returned from func3()\n");
+       printf("Calling pow(2,3)\n");
+       int pow_val = pow(2,3);                          // remote call (we hope!)
+ 	     cerr << "Returned from pow(3,2) and got " << pow_val << endl;	
 
        // 
        // Call (possibly remote) func3
        //
        printf("Calling replace()\n");
-       cerr << replace("I like eggs", "eggs", "steak") << endl;;                         // remote call (we hope!)
-       printf("Returned from replace()\n");
+       string replace_val = replace("lala good times", "lala", "falalalala");                         // remote call (we hope!)
+       cerr << "returned from replace and got " << replace_val << endl;
      }
 
      //

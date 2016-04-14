@@ -9,7 +9,7 @@ using namespace C150NETWORK;  // for all the comp150 utilities
 
 #include "testfunction.idl"
 
-void myReplace(std::string& str, const std::string& oldStr, const std::string& newStr){
+void super_replace(std::string& str, const std::string& oldStr, const std::string& newStr){
   size_t pos = 0;
   while((pos = str.find(oldStr, pos)) != std::string::npos){
      str.replace(pos, oldStr.length(), newStr);
@@ -30,6 +30,10 @@ int pow(int x, int y){
 }
 
 std::string replace( string base, string search, string replace){
-	myReplace(base, search, replace);
+	super_replace(base, search, replace);
 	return base;
+}
+
+void silly() {
+  cerr << ":-P" << endl;
 }

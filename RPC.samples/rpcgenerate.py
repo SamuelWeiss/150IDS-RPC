@@ -27,6 +27,7 @@ def generate_function_proxies(functions):
 		proxy += ('    server_call.append( "' + k + '-" );\n')
 		for j in i["arguments"]:
 			proxy += ('    server_call.append(serialize_' + j["type"] + '( ' + j["name"] + '));\n')
+		proxy += "    server_call += (char)23;\n"
 		proxy += "    RPCPROXYSOCKET->write(server_call.c_str(), server_call.length()+1);\n"
 		proxy += "    RPCPROXYSOCKET->read(readBuffer, sizeof(readBuffer));\n"
 		proxy +=   """    if (strncmp(readBuffer,"ERROR", sizeof(readBuffer))==0) {
@@ -69,7 +70,7 @@ def generate_function_stubs(functions):
 				stub += j["name"]
 				stub += " = deserialize_"
 				stub += j["type"]
-				stub += "(arguments);\n"
+				stub += "(get_var_string(arguments);\n"
 				stub += "    arguments = eat_value(arguments);\n"
 		if i["return_type"] == "void":
 			#just return done
@@ -98,45 +99,37 @@ def generate_dispatch_code(functions):
 string read_stream_to_string(){
 	string output;
 	char buffer[2];
-	ssize_t readlen;
 
 	do{
-		readlen = RPCSTUBSOCKET-> read(buffer, 1);
+		RPCSTUBSOCKET-> read(buffer, 1);
 		output += buffer[0];
-	}while(readlen > 0);
+	}while(buffer[0] != (char)23 );
 
 	return output;
 
 }
 
 string get_name_from_message(string message){
-	if(message.at(0) != '{'){
-		cerr << "I unno, raise an error or soemthing"<< endl;
-		exit(1);
-	}
-	for(unsigned i = 1; i < message.length(); i++){
+	for(unsigned i = 0; i < message.length(); i++){
 		if(message.at(i) == '-'){
-			return message.substr(1, i - 1);
+			return message.substr(0, i);
 		}
 	}
-       	cerr << "I unno, raise an error or soemthing"<< endl;
-        exit(1);
-        return "";
+  cerr << "I unno, raise an error or soemthing"<< endl;
+  exit(1);
+  return "";
+
 }
 
 string get_arguments_from_message(string message){
-	if(message.at(0) != '{'){
-		cerr << "I unno, raise an error or soemthing"<< endl;
-		exit(1);
-	}
-	for(unsigned i = 1; i < message.length(); i++){
+	for(unsigned i = 0; i < message.length(); i++){
 		if(message.at(i) == '-'){
 			return message.substr(i+1, message.length() - (i+2));
 		}
 	}
-       	cerr << "I unno, raise an error or soemthing"<< endl;
-        exit(1);
-        return "";
+  cerr << "I unno, raise an error or soemthing"<< endl;
+  exit(1);
+  return "";
 }
 
 void dispatchFunction() {
@@ -160,7 +153,11 @@ void dispatchFunction() {
 		if_block.append(temp)
 
 	output += " else ".join(if_block)
-	output += "\n}\n"
+
+	output += "else {\n"
+	output += '	cerr << "Unknown function called: " << name << endl;\n'
+	output += '}\n'
+	output += "}"
 
 	return output
 

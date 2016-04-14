@@ -18,9 +18,11 @@ void myReplace(std::string& str, const std::string& oldStr, const std::string& n
 }
 
 string get_var_string(string str){
-	//pulls out the first val and deletes it
+	//pulls out the first val
+	cerr << "The string is " << str << endl;
 	string output;
 	for(unsigned i = 0; i < str.length(); i++){
+		cerr << "Current output is " << output << endl;
 		output += str.at(i);
 		if(str.at(i) == '\\'){
 			if(str.at(i+1) == CLOSE_DELIM[0]){
@@ -46,12 +48,13 @@ string eat_value(string str){
 	// of how many open curly braces we have encountered and subtract
 	// when we enctounter a close curly brace, when the counter is 0 we
 	// are done
+	cerr << "In eat_value: The string is " << str << endl;
 	for(unsigned i = 0; i < str.length(); i++){
 		if(str.at(i) == '}'){
 			if(str.at(i-1) == '\\'){
 				continue;
 			} else {
-				return str.substr(i+1, str.length() - (i + 2));
+				return str.substr(i+1, str.length() - (i + 1));
 			}
 		}
 	}
