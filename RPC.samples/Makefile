@@ -80,13 +80,17 @@ simplefunctionclient: simplefunctionclient.o rpcproxyhelper.o simplefunction.pro
 simplefunctionserver: simplefunction.stub.o rpcserver.o rpcstubhelper.o simplefunction.o  $(C150AR) $(C150IDSRPCAR)  $(INCLUDES)
 	$(CPP) -o simplefunctionserver rpcserver.o simplefunction.stub.o simplefunction.o rpcstubhelper.o $(C150AR) $(C150IDSRPCAR) 
 
+#RACHEL BEGIN
+
 #%.proxy.o  $(C150AR) $(C150IDSRPCAR)  $(INCLUDES)
-%.proxy: %.proxy.cpp %.proxy.o 
-	$(CPP) -o %.proxy %.proxy.o $(C150AR) $(C150IDSRPCAR) 
+#%.proxy: %.proxy.cpp %.proxy.o 
+#	$(CPP) -o %.proxy data_packing.cpp $(C150AR) $(C150IDSRPCAR) 
 
-%.stub: %.stub.o 
-	$(CPP) -o %.stub %.stub.o $(C150AR) $(C150IDSRPCAR) 
+#%.stub: %.stub.o 
+#	$(CPP) -o %.stub data_packing.cpp $(C150AR) $(C150IDSRPCAR) 
 
+%server: %.stub.o rpcserver.o rpcstubhelper.o %.o data_packing.o
+	$(CPP) -o $@ $^ $(C150AR) $(C150IDSRPCAR) 
 
 ########################################################################
 #
@@ -169,6 +173,10 @@ idl_to_json: idl_to_json.o $(C150AR) $(C150IDSRPCAR)  $(INCLUDES)
 
 
 # make .o from .cpp
+%.proxy.o:%.proxy.cpp $(INCLUDES)
+	$(CPP) -c  $(CPPFLAGS) $< 
+%.stub.o:%.stub.cpp $(INCLUDES)
+	$(CPP) -c  $(CPPFLAGS) $< 
 
 %.o:%.cpp  $(INCLUDES)
 	$(CPP) -c  $(CPPFLAGS) $< 

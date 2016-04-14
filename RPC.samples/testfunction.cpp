@@ -1,6 +1,3 @@
-
-#include "testfunction.idl"
-
 #include <cstdio>
 #include <string>
 #include <ctime>
@@ -9,6 +6,8 @@
 #include <math.h>
 
 using namespace C150NETWORK;  // for all the comp150 utilities 
+
+#include "testfunction.idl"
 
 void myReplace(std::string& str, const std::string& oldStr, const std::string& newStr){
   size_t pos = 0;

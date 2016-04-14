@@ -33,7 +33,7 @@ def generate_function_proxies(functions):
 	        throw C150Exception("simplefunction.proxy: func1() received invalid response from the server");
     }\n"""
 	  	if(i["return_type"] != "void"):
-		  	proxy += ('    return deserialize_' + i["return_type"] + '(std::string str(readBuffer));\n')
+		  	proxy += ('    return deserialize_' + i["return_type"] + '(string(readBuffer));\n')
 	  	proxy += "}\n\n"
 	  	output += proxy
 	return output
@@ -101,7 +101,7 @@ string read_stream_to_string(){
 	ssize_t readlen;
 
 	do{
-		readlen = readlen = RPCSTUBSOCKET-> read(buffer, 1);
+		readlen = RPCSTUBSOCKET-> read(buffer, 1);
 		output += buffer[0];
 	}while(readlen > 0);
 
@@ -114,11 +114,14 @@ string get_name_from_message(string message){
 		cerr << "I unno, raise an error or soemthing"<< endl;
 		exit(1);
 	}
-	for(int i = 1; i < message.length(); i++){
+	for(unsigned i = 1; i < message.length(); i++){
 		if(message.at(i) == '-'){
 			return message.substr(1, i - 1);
 		}
 	}
+       	cerr << "I unno, raise an error or soemthing"<< endl;
+        exit(1);
+        return "";
 }
 
 string get_arguments_from_message(string message){
@@ -126,11 +129,14 @@ string get_arguments_from_message(string message){
 		cerr << "I unno, raise an error or soemthing"<< endl;
 		exit(1);
 	}
-	for(int i = 1; i < message.length(); i++){
+	for(unsigned i = 1; i < message.length(); i++){
 		if(message.at(i) == '-'){
 			return message.substr(i+1, message.length() - (i+2));
 		}
 	}
+       	cerr << "I unno, raise an error or soemthing"<< endl;
+        exit(1);
+        return "";
 }
 
 void dispatchFunction() {
@@ -141,12 +147,15 @@ void dispatchFunction() {
 """
 	if_block = []
 	for k,i in functions.iteritems():
-		temp = 'if(strcmp( name, "'
+		temp = 'if(strcmp( name.c_str(), "'
 		temp += k
 		temp += '") == 0){\n'
 		temp += '        __'
 		temp += k
-		temp += "(args);\n"
+		if not i["arguments"]:
+			temp += "();\n"
+		else:
+			temp += "(args);\n"
 		temp += "}"
 		if_block.append(temp)
 
@@ -160,8 +169,7 @@ void dispatchFunction() {
 
 
 def generate_proxy_file(functions, name):
-	output = '#include "' + name + '"'
-	output += """
+	output = """
 #include "rpcproxyhelper.h"
 #include "data_packing.h"
 #include <cstdio>
@@ -169,13 +177,13 @@ def generate_proxy_file(functions, name):
 #include "c150debug.h"
 using namespace C150NETWORK;
 """
+	output += '#include "' + name + '"\n'
 	output += generate_function_proxies(functions)
 	return output
 
 
 def generate_stub_file(functions, name):
-	output = '#include "' + name + '"'
-	output += """
+	output = """
 #include "rpcstubhelper.h"
 #include "data_packing.h"
 #include <cstdio>
@@ -183,6 +191,7 @@ def generate_stub_file(functions, name):
 #include "c150debug.h"
 using namespace C150NETWORK;
 """
+	output += '#include "' + name + '"\n'
 	output += generate_function_stubs(functions)
 	output += generate_dispatch_code(functions)
 	return output

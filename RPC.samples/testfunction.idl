@@ -1,5 +1,5 @@
 
 float halve(int x);
 int pow(int x, int y);
-string replace( string base, string search, string replace);
+string replace( string base, string search, string replace_me);
 void silly();
