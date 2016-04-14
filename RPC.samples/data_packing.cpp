@@ -19,10 +19,8 @@ void myReplace(std::string& str, const std::string& oldStr, const std::string& n
 
 string get_var_string(string str){
 	//pulls out the first val
-	cerr << "The string is " << str << endl;
 	string output;
 	for(unsigned i = 0; i < str.length(); i++){
-		cerr << "Current output is " << output << endl;
 		output += str.at(i);
 		if(str.at(i) == '\\'){
 			if(str.at(i+1) == CLOSE_DELIM[0]){
@@ -48,7 +46,6 @@ string eat_value(string str){
 	// of how many open curly braces we have encountered and subtract
 	// when we enctounter a close curly brace, when the counter is 0 we
 	// are done
-	cerr << "In eat_value: The string is " << str << endl;
 	for(unsigned i = 0; i < str.length(); i++){
 		if(str.at(i) == '}'){
 			if(str.at(i-1) == '\\'){
@@ -76,7 +73,10 @@ string serialize_int(int val){
 }
 
 int deserialize_int(string str){
+	cerr << "deserialize int " << str << endl;
 	string conv_buff = str.substr(5, str.length() - (1 + 5));
+		cerr << "deserialize int, conv_buff " << conv_buff << endl;
+
 	return atoi(conv_buff.c_str());
 }
 
@@ -112,9 +112,6 @@ string serialize_string(string val){
 
 string deserialize_string(string str){
 	myReplace(str, "\\}", "}");
-	cout << str << endl;
-	int temp =  str.length();
-	cout << temp << endl;
 	return str.substr(8, str.length() - (1 + 8));
 }
 

@@ -7,35 +7,39 @@
 using namespace C150NETWORK;
 #include "testfunction.idl"
 void __halve( string arguments ){
-    int x = deserialize_int(get_var_string(arguments);
+    int x = deserialize_int(get_var_string(arguments));
     arguments = eat_value(arguments);
     string output = serialize_float(halve(x));
+    output += (char)23;
     RPCSTUBSOCKET->write(output.c_str(), output.length()+1);
 }
 
 void __replace( string arguments ){
-    string base = deserialize_string(get_var_string(arguments);
+    string base = deserialize_string(get_var_string(arguments));
     arguments = eat_value(arguments);
-    string search = deserialize_string(get_var_string(arguments);
+    string search = deserialize_string(get_var_string(arguments));
     arguments = eat_value(arguments);
-    string replace_me = deserialize_string(get_var_string(arguments);
+    string replace_me = deserialize_string(get_var_string(arguments));
     arguments = eat_value(arguments);
     string output = serialize_string(replace(base, search, replace_me));
+    output += (char)23;
     RPCSTUBSOCKET->write(output.c_str(), output.length()+1);
 }
 
 void __silly(){
     silly();
     string output = "Done";
+    output += (char)23;
     RPCSTUBSOCKET->write(output.c_str(), output.length()+1);
 }
 
 void __pow( string arguments ){
-    int x = deserialize_int(get_var_string(arguments);
+    int x = deserialize_int(get_var_string(arguments));
     arguments = eat_value(arguments);
-    int y = deserialize_int(get_var_string(arguments);
+    int y = deserialize_int(get_var_string(arguments));
     arguments = eat_value(arguments);
     string output = serialize_int(pow(x, y));
+    output += (char)23;
     RPCSTUBSOCKET->write(output.c_str(), output.length()+1);
 }
 
@@ -56,13 +60,15 @@ string read_stream_to_string(){
 string get_name_from_message(string message){
 	for(unsigned i = 0; i < message.length(); i++){
 		if(message.at(i) == '-'){
-			return message.substr(0, i);
+            if(message.at(0) == 0)
+                return message.substr(1,i-1);
+            else
+    			return message.substr(0,i);
 		}
 	}
   cerr << "I unno, raise an error or soemthing"<< endl;
   exit(1);
   return "";
-
 }
 
 string get_arguments_from_message(string message){

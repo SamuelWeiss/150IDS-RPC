@@ -22,19 +22,18 @@ def generate_function_proxies(functions):
 		proxy += ") { \n"
 		
 		#setup a datastructure to hold message to server
-		proxy += '    char readBuffer[20];\n'
 		proxy += '    string server_call = "";\n'
 		proxy += ('    server_call.append( "' + k + '-" );\n')
 		for j in i["arguments"]:
 			proxy += ('    server_call.append(serialize_' + j["type"] + '( ' + j["name"] + '));\n')
 		proxy += "    server_call += (char)23;\n"
 		proxy += "    RPCPROXYSOCKET->write(server_call.c_str(), server_call.length()+1);\n"
-		proxy += "    RPCPROXYSOCKET->read(readBuffer, sizeof(readBuffer));\n"
-		proxy +=   """    if (strncmp(readBuffer,"ERROR", sizeof(readBuffer))==0) {
+		proxy += "    string readBuffer = read_stream_to_string();\n"
+		proxy +=   """    if (strncmp(readBuffer.c_str(),"ERROR", sizeof(readBuffer))==0) {
 	        throw C150Exception("simplefunction.proxy: func1() received invalid response from the server");
     }\n"""
 	  	if(i["return_type"] != "void"):
-		  	proxy += ('    return deserialize_' + i["return_type"] + '(string(readBuffer));\n')
+		  	proxy += ('    return deserialize_' + i["return_type"] + '(readBuffer);\n')
 	  	proxy += "}\n\n"
 	  	output += proxy
 	return output
@@ -70,7 +69,7 @@ def generate_function_stubs(functions):
 				stub += j["name"]
 				stub += " = deserialize_"
 				stub += j["type"]
-				stub += "(get_var_string(arguments);\n"
+				stub += "(get_var_string(arguments));\n"
 				stub += "    arguments = eat_value(arguments);\n"
 		if i["return_type"] == "void":
 			#just return done
@@ -88,6 +87,7 @@ def generate_function_stubs(functions):
 				temp.append(j["name"])
 			stub += ", ".join(temp)	
 			stub += '));\n'
+		stub += '    output += (char)23;\n'
 		stub += '    RPCSTUBSOCKET->write(output.c_str(), output.length()+1);\n'
 		#Todo: free stuff
 		stub += '}\n\n'
@@ -112,13 +112,15 @@ string read_stream_to_string(){
 string get_name_from_message(string message){
 	for(unsigned i = 0; i < message.length(); i++){
 		if(message.at(i) == '-'){
-			return message.substr(0, i);
+            if(message.at(0) == 0)
+                return message.substr(1,i-1);
+            else
+    			return message.substr(0,i);
 		}
 	}
   cerr << "I unno, raise an error or soemthing"<< endl;
   exit(1);
   return "";
-
 }
 
 string get_arguments_from_message(string message){
@@ -175,6 +177,29 @@ def generate_proxy_file(functions, name):
 using namespace C150NETWORK;
 """
 	output += '#include "' + name + '"\n'
+
+	output += """
+string read_stream_to_string(){
+	string output;
+	char buffer[2];
+
+	RPCPROXYSOCKET-> read(buffer, 1);
+  if(buffer[0] != 0) {
+    output += buffer[0];
+  }
+
+	do{
+		RPCPROXYSOCKET-> read(buffer, 1);
+		  if(buffer[0] != (char)23) {
+        output += buffer[0];
+      }
+	}while(buffer[0] != (char)23 );
+
+	return output;
+
+}
+"""
+
 	output += generate_function_proxies(functions)
 	return output
 
