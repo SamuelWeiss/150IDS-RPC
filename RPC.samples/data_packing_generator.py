@@ -1,10 +1,21 @@
+'''
+data_packing_generator.py
+By Rachael Hogue and Sam Weiss
+
+The function of this file is to generate code to convert any types
+specified by the given idl file to and from strings
+
+'''
 import json
 import subprocess
 import re
 
+#this function takes the name of an array and cleans the squarebraces
+# the squre braces aren't valid in functions names so they should be removed
 def fix_array_name(str):
 	return str.replace("[", "_").replace(']', "_")
 
+# Generate the headers for the fuctions that serialize data
 def generate_serialize_headers(type_name, type_desc):
 	if type_desc["type_of_type"] == "builtin":
 		return ""
@@ -17,7 +28,7 @@ def generate_serialize_headers(type_name, type_desc):
 	if type_desc["type_of_type"] == "struct":
 		return "string serialize_" + type_name + "(" + type_name + " val);\n"
 
-
+#Generate the function headers for the functions that deserialize data
 def generate_deserialize_headers(type_name, type_desc):
 	if type_desc["type_of_type"] == "builtin":
 		return ""
@@ -30,17 +41,19 @@ def generate_deserialize_headers(type_name, type_desc):
 	if type_desc["type_of_type"] == "struct":
 		return type_name + "* deserialize_" + type_name + "(string args);\n"
 
-
+#generate c++ functions that serialize data
 def generate_serialize(type_name, type_desc):
 	output = ""
 
 	#case 1: simple builtins, just copy what we've written
 	if type_desc["type_of_type"] == "builtin":
-		#print "builtin: " + type_name
+		# we already include all the builtins, so return nothing
 		return ""
 
 	#case 2: arrays, iterate over all elements and serialize them
 	if type_desc["type_of_type"] == "array":
+
+		#compute all the names that we're going to need to insert
 		fixed_type = fix_array_name(type_name)
 		first_num_re = re.search('(?<=_)[0-9]+(?=_)', fixed_type)
 		num_elem = first_num_re.group(0)
@@ -48,6 +61,7 @@ def generate_serialize(type_name, type_desc):
 		input_type = base_type
 		input_type += ('* ' * type_name.count('['))
 
+		# now actually input them into the string
 		output =   "string serialize_" + fixed_type + "(" + input_type + " val){\n"
 		output +=  "    string output;\n"
 		output += ('    output.append("{' + fixed_type + ':");\n')
@@ -65,6 +79,8 @@ def generate_serialize(type_name, type_desc):
 		output =  "string serialize_" + fixed_type + "(" + fixed_type + " val){\n"
 		output += "    string output;\n"
 		output += ('    output.append("{' + fixed_type + ':");\n')
+
+		#cycle through all the elements in the struct and serialize them
 		for i in type_desc["members"]:
 			output += ("    output.append(serialize_" + fix_array_name(i["type"]) + "(val." + i["name"] + "));\n")
 		output += '    output.append("}");\n'
@@ -72,6 +88,7 @@ def generate_serialize(type_name, type_desc):
 		output += '}\n'
 		return output
 
+#generate c++ functions that deserialize data
 def generate_deserialize(type_name, type_desc, types):
 	if type_desc["type_of_type"] == "builtin":
 		return ""
@@ -137,6 +154,7 @@ def generate_deserialize(type_name, type_desc, types):
 
 		return output
 
+#include the dependencies that we need
 def generate_data_packing_header(types, name):
 	output = """
 #include <string>
@@ -178,6 +196,7 @@ void deserialize_void(string str);
 
 	return output;
 
+#include the things we need in the c++ file
 def generate_data_packing_cpp(types, name):
 
 	output = ('#include "' + name[:-4] + '_data_packing.h"' )
