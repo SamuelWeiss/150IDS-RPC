@@ -387,7 +387,6 @@ def generate_stub_file(functions, name):
 	output = '#include "' + name[:-4] + '_data_packing.h"\n'
 	output += """
 #include "rpcstubhelper.h"
-#include "data_packing.h"
 #include <cstdio>
 #include <cstring>
 #include "c150debug.h"
