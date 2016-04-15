@@ -202,7 +202,6 @@ def generate_data_packing_cpp(types, name):
 	output = ('#include "' + name[:-4] + '_data_packing.h"' )
 
 	output += """
-#include "data_packing.h"
 #include <string>
 #include <cstring>
 #include <cstdlib>
