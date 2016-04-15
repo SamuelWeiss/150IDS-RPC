@@ -1,6 +1,6 @@
 '''
 rpcgenerate.py
-By Sam Weiss and Rachael Hogue
+By Sam Weiss and Rachel Hogue
 
 This is a file to be run on the command line with a single argument specifying
 an idl file. This program uses an outsode tool to parse that idl file into

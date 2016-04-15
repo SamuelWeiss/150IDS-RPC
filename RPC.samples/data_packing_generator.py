@@ -1,6 +1,6 @@
 '''
 data_packing_generator.py
-By Rachael Hogue and Sam Weiss
+By Rachel Hogue and Sam Weiss
 
 The function of this file is to generate code to convert any types
 specified by the given idl file to and from strings
