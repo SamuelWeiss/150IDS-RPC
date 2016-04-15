@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<!-- 
+ **********************************************************
+
+             TUFTS COMP 150-IDS HOMEWORK ASSIGNMENT
+
+        Fill in your name, e-mail and answers to questions
+        in the sections provided below.
+
+          All questions are marked up: <li class="q">
+          All answers are marked up:   <li class="a">
+
+
+     PLEASE DO NOT MODIFY ANY THING OTHER THAN THE 
+     NAME, E-MAIL, AND ANSWER FIELDS (you may also add
+     css declarations in the <head> if you need them,
+     but usually you won't.
+
+ **********************************************************
+ -->
+
+
+<html>
+<head>
+<meta charset="utf-8"> 
+<title>Tufts COMP 150-IDS Assignment &#8212; Remote Procedure Call Project Report</title>
+<link rel="stylesheet" type="text/css" href="http://www.cs.tufts.edu/comp/150IDS/style/homework.css" />
+</head>
+
+<body class="homework">
+
+
+<!-- ******************************************************
+	   YOU MUST FILL IN YOUR NAME, UTLN AND EMAIL BELOW!!
+         (You may copy this from an earlier assignment
+                         if you like)
+
+     ****************************************************** -->
+
+
+<div class="student">
+<p>
+<span class="label">Student1 name: </span>
+Rachel Hogue
+<br>
+
+<span class="label">UTLN: </span>
+rhogue01
+<br>
+
+<span class="label">E-mail: </span>
+<!-- DON'T FORGET UP UPDATE THE MAILTO: URI BELOW ALONG WITH
+     YOUR EMAIL IN THE ANCHOR.  IT SHOULD LOOK LIKE:
+ <a href="mailto:lady.gaga@cs.tufts.edu">lady.gaga@cs.tufts.edu</a>
+--> 
+
+<a href="mailto:rachel.hogue@tufts.edu">rachel.hogue@tufts.edu</a>
+<br>
+<br>
+<br>
+<span class="label">Student2 name: </span>
+Sam Weiss
+<br>
+<span class="label">UTLN: </span>
+sweiss07
+<br>
+
+<span class="label">E-mail: </span>
+<!-- DON'T FORGET UP UPDATE THE MAILTO: URI BELOW ALONG WITH
+     YOUR EMAIL IN THE ANCHOR.  IT SHOULD LOOK LIKE:
+ <a href="mailto:lady.gaga@cs.tufts.edu">lady.gaga@cs.tufts.edu</a>
+--> 
+
+<a href="mailto:samweiss250@gmail.com">samweiss@gmail.com</a>
+
+<br>
+</p>
+</div>
+
+
+
+
+<div class="UpperLeftHeader">
+<p>Tufts COMP 150-IDS (Spring 2016):
+<br>
+Internet-scale Distributed Systems</p>
+</div>
+
+
+<!-- - - - - - - - - - - - - - - - - - - - - - - -
+		HOMEWORK TITLE
+  - -  - - - - - - - - - - - - - - - - - - - - - - -->
+
+
+<div class="headerdiv">
+<h1>
+Tufts COMP 150-IDS:<br>
+RPC Project Report
+</h1>
+</div>
+
+<!-- ******************************************************
+
+              PLEASE ANSWER QUESTIONS IN THE SECTIONS
+	      LABELED class="a" (for answer)
+
+     ****************************************************** -->
+
+
+
+
+<div class="main">
+
+<h2 id="questions">Questions</h2>
+<!-- - - - - - - - - - - - - - - - - - - - - - - -
+		QUESTION
+  - -  - - - - - - - - - - - - - - - - - - - - - - -->
+<div class="qa">
+
+<ol class="qa">
+<li class="q">Did you implement an rpcgenerate program and does it handle all legal IDL files? If not, which test cases should we try in your submission  directory?</li>
+<li class="a">
+We implemented an rpcgenerate program in Python. It handles all legal IDL files EXCEPT for multidimensional arrays (on their own and in structs). 
+</li>
+
+<li class="q">Briefly explain the protocol you use over TCP to request function calls and return the results.</li>
+<li class="a">
+To request function calls, we sent over the function name, followed by a dash, followed by the parameters. We used a dash ("-") because, according to the standard ( <a href="https://msdn.microsoft.com/en-us/library/565w213d.aspx">https://msdn.microsoft.com/en-us/library/565w213d.aspx</a>), the only legal letters for function names are alphanumerics and the underscore. Accordingly, we decided it was safe to use a dash delimiter, since we shouldn't encounter any dashes in function names. <br/><br/>
+This is what a sample function request from the client looks like for a function "functionname" which is passed an int, string, and array of 2 ints as parameters: <br/> <br/>
+&nbsp;&nbsp;<em>functionname-{int:42}{string:test}{arr:{int:1}{int:37}}</em> <br/><br/>
+The response from the server actually has the same format, but without the function name and dash.<br/> <br/> 
+We converted brackets for arrays to underscores, so that they could be used in our function names (such as serialize___myarr_10_()).
+</li>
+
+<li class="q">Did you get help from anyone other than your teammate? If "yes", then briefly explain who helped you and how.</li>
+<li class="a">
+No
+</li>
+
+
+<li class="q">(optional) Do you have any other comments on this assignment (e.g. was it worthwhile, what did you learn from it, do you have suggestions for improvment if the course is offered again)?</li>
+<li class="a">
+We really enjoyed it. It was neat generating C++ code with Python. It was also fun to try to come up with a good design. Our troubles with dealing with multidimensional arrays were enlightening with regards to the inner workings of C and its inherent asymmetry.  
+</li>
+
+</ol>
+
+<!-- * * * * * * * * * * * * * * * * * * * * * -->
+<!--         ADDITIONAL INFORMATION            -->
+<!-- * * * * * * * * * * * * * * * * * * * * * -->
+
+<h2 id="reportbody">ADDITIONAL INFORMATION</h2>
+
+<!-- Delete the entire paragraph below 
+     and replace it with your report. (Do NOT
+     keep the color:grey styling on your report! :-) -->
+
+<h3>Overview:</h3>
+
+<p>We implemented a remote procedure call system to allow transparent C++ function calls. Though they things appear to be local, the calls are actually occuring on a separate server. We implemented this successfully with some exceptions for multidimensional arrays. </p>
+
+<h3>RPC Generate Design</h3>
+<p>
+Our rpcgenerator.py, written in Python, takes an idl file with types and functions, and generates xxx_data_packing.h and xxx_data_packing.cpp (where xxx is the name of the idl file), which contain serialize and deserialize functions for builtin types (int, float, string, and void) and any arrays and structs that are found in the idl file.  We manually crafted functions to convert the builtins into and out of string formats, and then dynamically generate deserialize and serialize functions for the arrays and structs. 
+</p>
+<p>
+Each c++ proxy function that we generate has the same function signature as the function that it is the proxy for. The c++ function proxy creates the string that will be sent to the server, consisting of the function name and arguments. After sending this string, it waits for the response from the server, which is then deserialized and returned.
+</p>
+<p>
+Each c++ stub function that we generate has no return type; it simply sends the response to the client. This function is called from the dispatchFunction when the server receives input with a matching function name. The stub function takes a single argument: a string of arguments sent to the server from the client. The stub function deserializes the string into appropriate variables and finally calls the "actual function" (the one that does the work that the unknowning user thinks is happening on the client). If the function has a void return type, the stub function sends back "DONE". Otherwise, it serializes the return value and sends it back to the client.  
+</p>
+
+<h3>Unhandled cases</h3>
+<p>When implementing this project we ran into a wall with arrays. We found that
+our ideas about how they would work didn't quite match up with the way that 
+they actually do, and this made it nearly impossible for us to make multi-
+dimmensional arrays work. When we were writing our code we were under the 
+impression that the arrays that were were working with would operate in the
+same way as heap allocated multi dimmensional arrays. That is to say that they
+are a pointer to an array of pointers to arrays. However, this is not how they
+were defined and therefore not how they were used. Instead they were defined
+as a pointer to an array of arrays, where all of the contents are in one 
+contiguous block of memory. Because our deserialize functions are external
+and therefore must return some value, and that value cannot be an array we 
+returned pointers to arrays. This works fine for one dimensional arrays,
+however when we attempted to test multi-dimmensional arrays we ran into trouble.
+The internal structure of our multi-dimmensional array simply didn't line up
+with what the routines were expecting and the solutions that we came up with 
+either involved more code than we had time to create or throwing out our 
+progress and starting from scratch.</p>
+<p>
+One other interesting thing to note is that for any functions in idl files whose implementation had output to standard IO or a file, that output would occur on the server. Our code isn't smart enough to send it back and output it on the client. 
+</p>
+
+</div>
+</div>
+</body>
+</html>

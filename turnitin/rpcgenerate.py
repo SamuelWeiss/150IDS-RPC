@@ -12,7 +12,7 @@ XXX.proxy.cpp
 XXX_data_packing.h
 XXX_data_packing.cpp
 
-Explanatiion of files
+Explanation of files
 (Here we will discuss what these files contain and how they will work.
 We will do this here because attempting to document both the python
 code that generates the c++ files and the c++ code itself is not
@@ -49,7 +49,7 @@ XXX_data_packing.h
 
 This header file simply contains definitions used by the other files.
 
-XXX_data_packing.c++
+XXX_data_packing.cpp
 
 This file deals with the serialization and deserialization of all of the data
 types specified in the idl file. It works in a straightforward way. First, it 
