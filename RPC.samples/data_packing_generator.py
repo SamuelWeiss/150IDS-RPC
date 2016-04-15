@@ -99,7 +99,10 @@ def generate_deserialize(type_name, type_desc, types):
 		output += str(num_elem)
 		output += ");\n"
 		output += ("    for(int i = 0; i < " + str(num_elem) + "; i++){\n")
-		output += ("        retval[i] = deserialize_" + fix_array_name(type_desc['member_type']) + "(get_var_string(args));\n" )
+		if types[type_desc["member_type"]]["type_of_type"] == "struct":
+			output += ("        retval[i] = *deserialize_" + fix_array_name(type_desc['member_type']) + "(get_var_string(args));\n" )
+		else:
+			output += ("        retval[i] = deserialize_" + fix_array_name(type_desc['member_type']) + "(get_var_string(args));\n" )
 		output += ("        args = eat_value(args);\n")
 		output += "    }\n"
 		output += "    return retval;\n"
@@ -116,23 +119,16 @@ def generate_deserialize(type_name, type_desc, types):
 		temp_arr_counter = 97
 		for i in type_desc["members"]:
 			if "[" in i["type"]:
-				output += (i["type"][2:i["type"].index('[')] + ('* ' * i["type"].count('[')) + " temp_arr_" + str(unichr(temp_arr_counter)) + " = ")
+				output += (i["type"][2:i["type"].index('[')] + '* ' + " temp_arr = ")
 				output += "deserialize_" + fix_array_name(i["type"]) + "(get_var_string(args));\n"
-				start_int = 97
-				curr_type = i["type"]
-				for array_level in range(i["type"].count('[')):
-					incr = str(unichr(start_int + array_level))
-					num_elems = types[curr_type]["element_count"]
-					output += ("for (int " + incr + "=0;" + incr + "<" + str(num_elems) + "; " + incr + "++) {\n" )
-					curr_type = types[curr_type]["member_type"]
-				temp_str = ""
-				for array_level in range(i["type"].count('[')):
-					temp_str += ("[" + str(unichr(start_int + array_level)) + "]")
-				if types[curr_type] == "struct":
-					output += ("retval->" + i["name"] + " = *temp_arr_" + str(unichr(temp_arr_counter))  + temp_str + ";\n")
+				num_elems = types[i["type"]]["element_count"]
+
+				output += ("for (int z=0; z <" + str(num_elems) + "; z++) {\n" )
+				if types[i["type"]]["member_type"] == "struct":
+					output += ("retval->" + i["name"] + "[z] = *temp_arr[z];\n")
 				else:
-					output += ("retval->" + i["name"] + temp_str + " = temp_arr_"  + str(unichr(temp_arr_counter)) + temp_str + ";\n")
-				output += ("}\n" * i["type"].count('['))
+					output += ("retval->" + i["name"] + "[z] = temp_arr[z];\n")
+				output += "}\n"
 			else:
 				output += ("    retval->" + i["name"] + " = deserialize_" + fix_array_name(i["type"]) + "(get_var_string(args));\n")
 			output += ("    args = eat_value(args);\n")
