@@ -1,6 +1,7 @@
 import json
 import subprocess
 import sys
+from data_packing_generator import *
 
 builtins = ['int', 'string', 'float', 'void']
 
@@ -15,7 +16,11 @@ def generate_function_proxies(functions):
 
 		temp = []
 		for j in i["arguments"]:
-			temp.append(j["type"] + " " + j["name"])
+			if '[' in j["type"]:
+				arr_arg = j["type"][2:j["type"].index('[')] + ('* ' * j["type"].count('[')) + j["name"]
+				temp.append(arr_arg)
+			else:
+				temp.append(j["type"] + " " + j["name"])
 
 		proxy += ', '.join(temp)
 
@@ -25,7 +30,7 @@ def generate_function_proxies(functions):
 		proxy += '    string server_call = "";\n'
 		proxy += ('    server_call.append( "' + k + '-" );\n')
 		for j in i["arguments"]:
-			proxy += ('    server_call.append(serialize_' + j["type"] + '( ' + j["name"] + '));\n')
+			proxy += ('    server_call.append(serialize_' + fix_array_name(j["type"]) + '( ' + j["name"] + '));\n')
 		proxy += "    server_call += (char)23;\n"
 		proxy += "    RPCPROXYSOCKET->write(server_call.c_str(), server_call.length()+1);\n"
 		proxy += "    string readBuffer = read_stream_to_string();\n"
@@ -56,10 +61,9 @@ def generate_function_stubs(functions):
 				#TODO: clean up type names
 				if j["type"] not in builtins:
 					if '[' in j["type"]:
-						cleaned_name = j["type"][0:j["type"].index('[')]
+						cleaned_name = j["type"][2:j["type"].index('[')]
 						stub += cleaned_name
-						for useless in range(j["type"].count('[')):
-							stub += '* '
+						stub += ('* ' * j["type"].count('['))
 					else:
 						stub += j["type"]
 						stub += '* '
@@ -68,7 +72,7 @@ def generate_function_stubs(functions):
 				stub += ' '
 				stub += j["name"]
 				stub += " = deserialize_"
-				stub += j["type"]
+				stub += fix_array_name(j["type"])
 				stub += "(get_var_string(arguments));\n"
 				stub += "    arguments = eat_value(arguments);\n"
 		if i["return_type"] == "void":
@@ -84,7 +88,10 @@ def generate_function_stubs(functions):
 			stub += ('    string output = serialize_' + i["return_type"] + '(' + k + '(') 
 			temp = []
 			for j in i["arguments"]:
-				temp.append(j["name"])
+				if j["type"] not in builtins and '[' not in j["type"]:
+					temp.append("*" + j["name"])
+				else:
+					temp.append(j["name"])
 			stub += ", ".join(temp)	
 			stub += '));\n'
 		stub += '    output += (char)23;\n'
@@ -168,15 +175,14 @@ void dispatchFunction() {
 
 
 def generate_proxy_file(functions, name):
-	output = """
+	output = '#include "' + name[:-4] + '_data_packing.h"\n'
+	output += """
 #include "rpcproxyhelper.h"
-#include "data_packing.h"
 #include <cstdio>
 #include <cstring>
 #include "c150debug.h"
 using namespace C150NETWORK;
 """
-	output += '#include "' + name + '"\n'
 
 	output += """
 string read_stream_to_string(){
@@ -205,7 +211,8 @@ string read_stream_to_string(){
 
 
 def generate_stub_file(functions, name):
-	output = """
+	output = '#include "' + name[:-4] + '_data_packing.h"\n'
+	output += """
 #include "rpcstubhelper.h"
 #include "data_packing.h"
 #include <cstdio>
@@ -213,7 +220,6 @@ def generate_stub_file(functions, name):
 #include "c150debug.h"
 using namespace C150NETWORK;
 """
-	output += '#include "' + name + '"\n'
 	output += generate_function_stubs(functions)
 	output += generate_dispatch_code(functions)
 	return output
@@ -230,6 +236,14 @@ def prepare_rpc(file_name):
 	proxy_file = open((file_name[:-3] + "proxy.cpp"), "w")
 	proxy_file.write(generate_proxy_file(idl_contents["functions"], file_name))
 	proxy_file.close()
+
+	data_packing_cpp_file = open((file_name[:-4] + "_data_packing.cpp"), "w")
+	data_packing_cpp_file.write(generate_data_packing_cpp(idl_contents["types"], file_name))
+	data_packing_cpp_file.close()
+
+	data_packing_header_file = open((file_name[:-4] + "_data_packing.h"), "w")
+	data_packing_header_file.write(generate_data_packing_header(idl_contents["types"], file_name))
+	data_packing_header_file.close()
 
 if len(sys.argv) != 2:
 	print "There was an unsupported number of arguments!"

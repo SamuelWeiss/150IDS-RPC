@@ -19,16 +19,24 @@ void myReplace(std::string& str, const std::string& oldStr, const std::string& n
 
 string get_var_string(string str){
 	//pulls out the first val
-	string output;
-	for(unsigned i = 0; i < str.length(); i++){
-		output += str.at(i);
-		if(str.at(i) == '\\'){
-			if(str.at(i+1) == CLOSE_DELIM[0]){
-				output += str.at(i+1);
-				i++;
+	int curly_count = 1;
+	for(unsigned i = 1; i < str.length(); i++){
+		if(str.at(i) == '}'){
+			if(str.at(i-1) == '\\'){
+				continue;
+			} else {
+				curly_count--;
 			}
-		} else if(str.at(i) == CLOSE_DELIM[0]){
-			return output;
+		} else if(str.at(i) == '{'){
+			if(str.at(i-1) == '\\'){
+				continue;
+			} else {
+				curly_count++;
+			}
+		}
+
+		if(curly_count == 0) {
+			return str.substr(0, i + 1);
 		}
 	}
 	cerr << "something bad happened" << endl;
@@ -46,13 +54,24 @@ string eat_value(string str){
 	// of how many open curly braces we have encountered and subtract
 	// when we enctounter a close curly brace, when the counter is 0 we
 	// are done
-	for(unsigned i = 0; i < str.length(); i++){
+	int curly_count = 1;
+	for(unsigned i = 1; i < str.length(); i++){
 		if(str.at(i) == '}'){
 			if(str.at(i-1) == '\\'){
 				continue;
 			} else {
-				return str.substr(i+1, str.length() - (i + 1));
+				curly_count--;
 			}
+		} else if(str.at(i) == '{'){
+			if(str.at(i-1) == '\\'){
+				continue;
+			} else {
+				curly_count++;
+			}
+		}
+
+		if(curly_count == 0) {
+			return str.substr(i+1, str.length() - (i + 1));
 		}
 	}
 	cerr << "something bad happened" << endl;
@@ -105,6 +124,7 @@ string serialize_string(string val){
 
 	//need to escape close curly braces
 	myReplace(val, CLOSE_DELIM, "\\}");
+	myReplace(val, OPEN_DELIM,  "\\{");
 	output.append(val);
 	output.append(CLOSE_DELIM);
 	return output;
@@ -112,6 +132,7 @@ string serialize_string(string val){
 
 string deserialize_string(string str){
 	myReplace(str, "\\}", "}");
+	myReplace(str, "\\{", "{");
 	return str.substr(8, str.length() - (1 + 8));
 }
 
